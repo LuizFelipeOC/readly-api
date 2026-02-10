@@ -1,3 +1,4 @@
+import './config/env'
 import fastify from "fastify";
 import { registerRoutes } from "./routes";
 
