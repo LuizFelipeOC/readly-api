@@ -1,6 +1,6 @@
 import { FastifyReply, FastifyRequest } from "fastify";
 import { AuthService } from "./auth.services";
-import { ILoginRequest } from "./auth.types";
+import { ILoginRequest, IRegistrationRequest } from "./auth.types";
 import { IAuthError } from "./auth.errors";
 
 export class AuthController {
@@ -28,7 +28,28 @@ export class AuthController {
             }
 
             return reply.code(500).send({
-                message: 'Ocorreu um erro inesperado durante a autenticação . Por favor, tente novamente mais tarde.',
+                message: 'Ocorreu um erro inesperado durante a autenticação. Por favor, tente novamente mais tarde.',
+            })
+        }
+    }
+
+    async registration(
+        request: FastifyRequest<{ Body: IRegistrationRequest }>,
+        reply: FastifyReply,
+    ) {
+        try {
+            const result = await this.authService.registration(request.body)
+
+            return reply.code(201).send(result)
+        } catch (err: any) {
+            if (err instanceof IAuthError) {
+                return reply.code(err.code ?? 500).send({
+                    message: err.message ?? 'Ocorreu um erro durante o registro. Por favor, tente novamente mais tarde.',
+                })
+            }
+
+            return reply.code(500).send({
+                message: 'Ocorreu um erro inesperado durante o registro. Por favor, tente novamente mais tarde.',
             })
         }
     }
